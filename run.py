@@ -2,7 +2,10 @@ import scipy.special
 from scipy.stats import binom
 import random
 import matplotlib.pyplot as plt
+from matplotlib.pyplot import figure
 import time
+import sys
+import configparser
 
 start_time = time.time()
 
@@ -177,6 +180,8 @@ def uniformly_sampled_input_experiment(d, n, m, p_set, sample_size):
 
     print("--- %s seconds ---" % (time.time() - start_time))
 
+    plt.figure(figsize=(10,10))
+
     ax1 = plt.subplot(1, 2, 1)
     ax1.set_ylim(0, 1.1 * max(mix_real + mix_ideal))
     plt.bar(list(range(m + 1)), mix_real)
@@ -186,11 +191,12 @@ def uniformly_sampled_input_experiment(d, n, m, p_set, sample_size):
     plt.bar(list(range(m + 1)), mix_ideal)
     plt.title('Ideal world, mean=%f, variance=%f' % (mix_ideal_mean, mix_ideal_var))
 
-    plt.suptitle('Domain_size: %i, Input_size: %i, Input_domain_size: %s, sample size: %i, # hashes functions: %i, '
+    plt.suptitle('Domain_size: %i, Input_size: %i, Input_domain_size: %s,\n sample size: %i, # hashes functions: %i, '
                  ' Total variation: %f'
                  % (d, n, "{:.2e}".format(scipy.special.comb(d, n, exact=False)), sample_size, m, tv))
+    plt.tight_layout()
+    plt.savefig('experiment.png', dpi=100, bbox_inches="tight")
     plt.show()
-
     return 0
 
 
@@ -210,17 +216,23 @@ def uniformly_sampled_input_experiment(d, n, m, p_set, sample_size):
 
 def main():
     # Domain size
+    config = configparser.ConfigParser()
+    config.read(sys.argv[1])
 
-    domain_size = 100
+    domain_size = int(config['parameters']['domain_size'])
+    input_size = int(config['parameters']['input_size'])
+    m = int(config['parameters']['hash_number'])
+    p_set = float(config['parameters']['p_set'])
+    sample_size = int(config['parameters']['sample_size'])
 
     # Input size
-    input_size = 50
+    # input_size = 50
 
     # number of hash function
-    m = 10
+    # m = 10
 
     # Probability to set each bit of binary mask to 1.
-    p_set = 0.5
+    # p_set = 0.5
 
     assert domain_size >= input_size
 
@@ -231,7 +243,7 @@ def main():
 
     print("\n==========Uniformly sampled input experiment==========")
     # sample size
-    sample_size = 10000
+    # sample_size = 10000
     # print("domain size = ", scipy.special.comb(domain_size, input_size, exact=False))
 
     uniformly_sampled_input_experiment(domain_size, input_size, m, p_set, sample_size)
