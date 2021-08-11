@@ -1,0 +1,7 @@
+[parameters]
+
+domain_size = 100
+input_size = 50
+hash_number = 10
+p_set = 0.5
+sample_size = 10000
